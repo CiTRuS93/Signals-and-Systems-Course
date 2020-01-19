@@ -1,6 +1,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+def nice_wave(N: int) -> np.array:
+    # create the signal in time and dft domains
+    sig_rnd = np.random.uniform(-1, 1, N)
+    Sig_rnd = np.fft.fft(sig_rnd)
+
+    # build the desired shape in the dft domain
+    Desired = np.ones(N)
+
+    for i in range(1, int(N / 4)):
+        Desired[i] = 1 - 4 / N * i
+
+    for i in range(int(3 * N / 4 + 1), N):
+        Desired[i] = -3 + 4 / N * i
+
+    # build a "filter" - a vector that will make the random signal in the
+    # desired shape
+    Filt = abs(Desired) / abs(Sig_rnd)
+    Sig = Sig_rnd * Filt
+    sig = np.fft.ifft(Sig);
+    sig_r_var = np.var(np.real(sig));
+    sig_i_var = np.var(np.imag(sig));
+    sig = np.real(sig);
+    Sig = np.fft.fft(sig);
+    return sig
+
+
 # dictionary of different wave function, with their name as key.
 waves_dict = {
     'square_HP': lambda x: max(0, np.sign(np.sin(x - np.pi / 2))),
@@ -64,6 +91,3 @@ def get_wave(name: str, omega: np.array) -> np.array:
    """
     wave = waves_dict.get(name)
     return np.array([wave(two_pi_repeat(x)) for x in omega])
-
-
-
