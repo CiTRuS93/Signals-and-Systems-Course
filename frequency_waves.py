@@ -1,30 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from Util import v_to_db
 
-
-def nice_wave(N: int) -> np.array:
+def nice_wave(N: int, Desired) -> np.array:
     # create the signal in time and dft domains
     sig_rnd = np.random.uniform(-1, 1, N)
     Sig_rnd = np.fft.fft(sig_rnd)
 
     # build the desired shape in the dft domain
-    Desired = np.ones(N)
-
-    for i in range(1, int(N / 4)):
-        Desired[i] = 1 - 4 / N * i
-
-    for i in range(int(3 * N / 4 + 1), N):
-        Desired[i] = -3 + 4 / N * i
 
     # build a "filter" - a vector that will make the random signal in the
     # desired shape
     Filt = abs(Desired) / abs(Sig_rnd)
     Sig = Sig_rnd * Filt
-    sig = np.fft.ifft(Sig);
-    sig_r_var = np.var(np.real(sig));
-    sig_i_var = np.var(np.imag(sig));
-    sig = np.real(sig);
-    Sig = np.fft.fft(sig);
+    sig = np.fft.ifft(Sig)
+    sig_r_var = np.var(np.real(sig))
+    sig_i_var = np.var(np.imag(sig))
+    sig = np.real(sig)
+    Sig = np.fft.fft(sig)
     return sig
 
 
@@ -57,6 +50,10 @@ def two_pi_repeat(x) -> float:
     return abs(x) - 2 * np.pi * np.round(abs(x) / (2 * np.pi))
 
 
+def k_repeat(x, k):
+    return abs(x) - k * np.round(abs(x) / k)
+
+
 def get_wave_with_omega(name: str) -> [np.array, np.array]:
     """
 
@@ -71,6 +68,31 @@ def get_wave_with_omega(name: str) -> [np.array, np.array]:
     omega = np.linspace(-np.pi, np.pi, 1000)
     wave = waves_dict.get(name)
     return omega, np.array([wave(two_pi_repeat(x)) for x in omega])
+
+
+def square(omega, a, b, k=2 * np.pi):
+    sqr = np.array([1 if a < k_repeat(x, k) < b else 0 for x in omega])
+    return sqr
+
+
+def reverse_square(omega, a, b, k=2 * np.pi):
+    sqr = np.array([0 if a < k_repeat(x, k) < b else 1 for x in omega])
+    return sqr
+
+
+def triangle(omega, center, r):
+    tri = np.array([max(0, (1 - (abs(two_pi_repeat(x) - center) / r))) for x in omega])
+    return tri
+
+
+def reverse_triangle(omega, r):
+    tri = np.array([max(0, (1 - (abs(x - min(omega)) / r)), 1 - (abs(x + min(omega)) / r)) for x in omega])
+    return tri
+
+
+def circle(omega, o, r):
+    cir = np.array([np.sqrt(max((r) ** 2 - abs(two_pi_repeat(x) - o) ** 2, 0)) for x in omega])
+    return cir
 
 
 def get_wave(name: str, omega: np.array) -> np.array:
@@ -89,5 +111,15 @@ def get_wave(name: str, omega: np.array) -> np.array:
    np.array
        the actual wave
    """
+
     wave = waves_dict.get(name)
-    return np.array([wave(two_pi_repeat(x)) for x in omega])
+    Y = np.array([wave(two_pi_repeat(x)) for x in omega])
+    Y=nice_wave(len(Y),Y)
+    return ((Y))
+
+
+import matplotlib.pyplot as plt
+
+t = square(np.linspace(-np.pi, np.pi, 1000), np.pi / 2, 3 * np.pi / 4)
+plt.plot(np.linspace(-np.pi, np.pi, 1000)/np.pi, t)
+plt.show()

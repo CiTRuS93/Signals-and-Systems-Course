@@ -44,9 +44,16 @@ def fold_signal(x, n):
 def drop_every_kth(k,x):
     return np.delete(x, np.arange(0, x.size, k))
 
+def decimate_in_k(k,x):
+    return x[::k]
+
 
 def zero_padding(k,x):
-    return np.insert(x, range(0, len(x), k), 0)
+    x_out =  np.zeros(k*len(x))
+    for i in range(len(x)):
+        x_out[k*i] = x[i]
+    return x_out
+
 
 
 def v_to_db(x):
