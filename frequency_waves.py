@@ -72,7 +72,7 @@ def get_wave_with_omega(name: str) -> [np.array, np.array]:
 
 def square(omega, a, b, k=2 * np.pi):
     sqr = np.array([1 if a < k_repeat(x, k) < b else 0 for x in omega])
-    return sqr
+    return (sqr)
 
 
 def reverse_square(omega, a, b, k=2 * np.pi):
@@ -120,6 +120,6 @@ def get_wave(name: str, omega: np.array) -> np.array:
 
 import matplotlib.pyplot as plt
 
-t = square(np.linspace(-np.pi, np.pi, 1000), np.pi / 2, 3 * np.pi / 4)
-plt.plot(np.linspace(-np.pi, np.pi, 1000)/np.pi, t)
-plt.show()
+#t = square(np.linspace(-np.pi, np.pi, 1000), np.pi / 2, 3 * np.pi / 4)
+#plt.plot(np.linspace(-np.pi, np.pi, 1000)/np.pi, t)
+#plt.show()
