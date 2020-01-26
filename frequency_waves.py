@@ -11,6 +11,7 @@ def nice_wave(N: int, Desired) -> np.array:
 
     # build a "filter" - a vector that will make the random signal in the
     # desired shape
+    Desired = 10**(Desired/20)
     Filt = abs(Desired) / abs(Sig_rnd)
     Sig = Sig_rnd * Filt
     sig = np.fft.ifft(Sig)
@@ -114,7 +115,7 @@ def get_wave(name: str, omega: np.array) -> np.array:
 
     wave = waves_dict.get(name)
     Y = np.array([wave(two_pi_repeat(x)) for x in omega])
-    Y=nice_wave(len(Y),Y)
+    Y=nice_wave(len(Y),Y*60)
     return ((Y))
 
 
